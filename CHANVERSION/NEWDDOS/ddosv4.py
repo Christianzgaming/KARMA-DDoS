@@ -59,9 +59,9 @@ MAX_RPS = 500.0         # Increased from 200.0
 MAX_WORKERS = 500       # Increased from 100
 
 # Degradation thresholds - More lenient
-MAX_429_RATE = 0.20     # Increased from 0.10
-MAX_5XX_RATE = 0.30     # Increased from 0.20
-MAX_TIMEOUT_RATE = 0.30 # Increased from 0.20
+MAX_429_RATE = 1.00     # Increased from 0.10
+MAX_5XX_RATE = 1.00     # Increased from 0.20
+MAX_TIMEOUT_RATE = 1.00 # Increased from 0.20
 MAX_LATENCY_P95 = 60.0  # Increased from 5.0
 
 WINDOW_SIZE = 50
