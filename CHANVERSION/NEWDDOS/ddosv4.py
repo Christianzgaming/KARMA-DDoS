@@ -2,12 +2,7 @@
 """
 Advanced HTTP Performance Benchmark Tool with Cloudflare Bypass
 ===============================================================
-Enhanced version with:
-- Higher RPS limits (500)
-- Faster performance
-- Better Cloudflare bypass
-- Improved error handling
-- Optimized for Windows
+FIXED VERSION - No more early stopping!
 """
 
 import argparse
@@ -42,7 +37,7 @@ from rich.layout import Layout
 from rich import box
 
 # ============================================
-# CONFIGURATION - UPGRADED
+# CONFIGURATION - FIXED (No more stopping!)
 # ============================================
 
 DEFAULT_URL = "https://genggi.com/"
@@ -54,18 +49,19 @@ DEFAULT_RETRIES = 3
 DEFAULT_WARMUP = 5
 
 # ⬆️ UPGRADED: Higher limits
-MAX_CONCURRENCY = 5000  # Increased from 1000
-MAX_RPS = 500.0         # Increased from 200.0
-MAX_WORKERS = 500       # Increased from 100
+MAX_CONCURRENCY = 5000
+MAX_RPS = 500.0
+MAX_WORKERS = 500
 
-# Degradation thresholds - More lenient
-MAX_429_RATE = 1.00     # Increased from 0.10
-MAX_5XX_RATE = 1.00     # Increased from 0.20
-MAX_TIMEOUT_RATE = 1.00 # Increased from 0.20
-MAX_LATENCY_P95 = 60.0  # Increased from 5.0
+# ✅ FIXED: Disabled all stopping conditions
+MAX_429_RATE = 1.0      # 100% - never trigger
+MAX_5XX_RATE = 1.0      # 100% - never trigger
+MAX_TIMEOUT_RATE = 1.0  # 100% - never trigger
+MAX_LATENCY_P95 = 999.0 # Never trigger
+MAX_CF_BLOCK_RATE = 1.0 # Never trigger
 
 WINDOW_SIZE = 50
-PROGRESS_INTERVAL = 0.1  # Faster updates
+PROGRESS_INTERVAL = 0.1
 
 # ============================================
 # CLOUDFLARE BYPASS - ENHANCED
@@ -74,7 +70,6 @@ PROGRESS_INTERVAL = 0.1  # Faster updates
 class CloudflareBypass:
     """Cloudflare bypass strategies - Enhanced"""
     
-    # ⬆️ UPGRADED: More User-Agents
     USER_AGENTS = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
@@ -90,7 +85,6 @@ class CloudflareBypass:
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/120.0",
     ]
     
-    # ⬆️ UPGRADED: More Accept headers
     ACCEPT_HEADERS = [
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -322,7 +316,7 @@ class CloudflareSession:
 
 
 # ============================================
-# DATA CLASSES - UNCHANGED
+# DATA CLASSES
 # ============================================
 
 @dataclass(slots=True)
@@ -411,7 +405,7 @@ class StageStats:
 
 
 # ============================================
-# METRICS AND STATISTICS - UNCHANGED
+# METRICS AND STATISTICS
 # ============================================
 
 def percentile(values: List[float], percent: float) -> float:
@@ -476,48 +470,18 @@ def calculate_metrics(results: List[Result], elapsed: float) -> Dict[str, Any]:
     }
 
 
+# ============================================
+# ✅ FIXED: degradation_reason - NEVER STOPS
+# ============================================
+
 def degradation_reason(results: List[Result]) -> Optional[str]:
-    if len(results) < WINDOW_SIZE:
-        return None
-    
-    recent = results[-WINDOW_SIZE:]
-    total = len(recent)
-    
-    rate_429 = sum(1 for r in recent if r.is_rate_limited) / total
-    rate_5xx = sum(1 for r in recent if r.is_server_error) / total
-    timeout_rate = sum(1 for r in recent if r.is_timeout) / total
-    cf_block_rate = sum(1 for r in recent if r.is_cloudflare_blocked) / total
-    
-    latencies = [r.latency for r in recent if r.is_success]
-    if latencies:
-        p95_latency = percentile(latencies, 95)
-        if p95_latency > MAX_LATENCY_P95:
-            return f"P95 latency exceeded {MAX_LATENCY_P95}s: {p95_latency:.2f}s"
-    
-    if cf_block_rate > 0.3:
-        return f"Cloudflare blocking rate too high: {cf_block_rate * 100:.1f}%"
-    
-    if rate_429 >= MAX_429_RATE:
-        return f"429 rate reached {rate_429 * 100:.1f}%"
-    
-    if rate_5xx >= MAX_5XX_RATE:
-        return f"5xx rate reached {rate_5xx * 100:.1f}%"
-    
-    if timeout_rate >= MAX_TIMEOUT_RATE:
-        return f"Timeout rate reached {timeout_rate * 100:.1f}%"
-    
-    if len(results) >= WINDOW_SIZE * 2:
-        old = results[-WINDOW_SIZE*2:-WINDOW_SIZE]
-        old_errors = sum(1 for r in old if not r.is_success) / len(old)
-        new_errors = sum(1 for r in recent if not r.is_success) / len(recent)
-        if new_errors > old_errors * 2 and new_errors > 0.15:
-            return f"Increasing error trend: {old_errors*100:.1f}% → {new_errors*100:.1f}%"
-    
+    """✅ FIXED: Always returns None - Never stops the benchmark"""
+    # DISABLED - Never stop for any reason
     return None
 
 
 # ============================================
-# WORKER IMPLEMENTATION - OPTIMIZED
+# WORKER IMPLEMENTATION
 # ============================================
 
 class RequestWorker:
@@ -650,7 +614,7 @@ async def worker_loop(
 
 
 # ============================================
-# PROGRESS MONITOR - OPTIMIZED
+# PROGRESS MONITOR
 # ============================================
 
 class DashboardMonitor:
@@ -729,7 +693,7 @@ class DashboardMonitor:
         layout["status_codes"].update(Panel(status_table, title="🔢 Status Codes", border_style="blue"))
         
         if self.stop_event.is_set():
-            layout["footer"].update(Panel("[bold red]STOPPED - Degradation detected[/bold red]", style="bold red"))
+            layout["footer"].update(Panel("[bold red]STOPPED - User or error[/bold red]", style="bold red"))
         else:
             layout["footer"].update(Panel("[bold green]Running...[/bold green]", style="bold green"))
 
@@ -781,7 +745,7 @@ async def progress_monitor(
 
 
 # ============================================
-# STAGE EXECUTION - OPTIMIZED
+# STAGE EXECUTION
 # ============================================
 
 async def run_stage(
@@ -868,6 +832,7 @@ async def run_stage(
     
     try:
         while time.monotonic() < end_time and not stop_event.is_set():
+            # ✅ FIXED: degradation_reason now always returns None
             reason = degradation_reason(results)
             if reason:
                 console.print(f"\n[bold red]⚠️ Degradation detected: {reason}[/bold red]")
@@ -892,7 +857,7 @@ async def run_stage(
 
 
 # ============================================
-# REPORTING - UNCHANGED
+# REPORTING
 # ============================================
 
 def print_stage_report(
@@ -1018,7 +983,7 @@ def parse_ramp(value: str) -> List[float]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Advanced HTTP Performance Benchmark Tool with Cloudflare Bypass",
+        description="Advanced HTTP Performance Benchmark Tool with Cloudflare Bypass - FIXED",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -1209,7 +1174,8 @@ async def main_async(args: argparse.Namespace) -> None:
                 f"[white]Duration: {args.stage_duration}s per stage[/white]\n"
                 f"[white]Concurrency: {args.concurrency} workers[/white]\n"
                 f"[white]Cloudflare Bypass: {bypass_info}[/white]\n"
-                f"[white]Rotate Headers: {rotate_info}[/white]",
+                f"[white]Rotate Headers: {rotate_info}[/white]\n"
+                f"[bold green]✅ Early stopping DISABLED[/bold green]",
                 border_style="cyan",
             ))
         
@@ -1245,6 +1211,7 @@ async def main_async(args: argparse.Namespace) -> None:
             if args.output:
                 await save_results(results, args.output, args.format)
             
+            # ✅ FIXED: reason is always None, so never stops
             if reason:
                 console.print(f"\n[bold red]🛑 STOPPING RAMP: {reason}[/bold red]")
                 stopped_early = True
