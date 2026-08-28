@@ -224,7 +224,7 @@ def main() -> None:
 
     if not 1 <= args.concurrency <= 9999999:
         raise SystemExit(
-            "Concurrency must be between 1 and 5."
+            "Concurrency must be between 1 and 9999999."
         )
 
     if args.delay < 0.5:
