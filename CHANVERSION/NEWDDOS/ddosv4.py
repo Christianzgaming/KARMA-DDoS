@@ -49,7 +49,7 @@ DEFAULT_URL = "https://genggi.com/"
 DEFAULT_STAGE_DURATION = 10
 DEFAULT_RAMP = "10,25,50,100"
 DEFAULT_CONCURRENCY = 500
-DEFAULT_TIMEOUT = 10.0
+DEFAULT_TIMEOUT = 30.0
 DEFAULT_RETRIES = 3
 DEFAULT_WARMUP = 5
 
@@ -62,7 +62,7 @@ MAX_WORKERS = 500       # Increased from 100
 MAX_429_RATE = 0.20     # Increased from 0.10
 MAX_5XX_RATE = 0.30     # Increased from 0.20
 MAX_TIMEOUT_RATE = 0.30 # Increased from 0.20
-MAX_LATENCY_P95 = 10.0  # Increased from 5.0
+MAX_LATENCY_P95 = 60.0  # Increased from 5.0
 
 WINDOW_SIZE = 50
 PROGRESS_INTERVAL = 0.1  # Faster updates
